@@ -63,7 +63,7 @@ echo "Running e2e with nginx base image ${NGINX_BASE_IMAGE}"
 if [ "${SKIP_CLUSTER_CREATION}" = "false" ]; then
   echo "[dev-env] creating Kubernetes cluster with kind"
 
-  export K8S_VERSION=${K8S_VERSION:-v1.32.0@sha256:c48c62eac5da28cdadcf560d1d8616cfa6783b58f0d94cf63ad1bf49600cb027}
+  export K8S_VERSION=${K8S_VERSION:-v1.33.2@sha256:c55080dc5be4f2cc242e6966fdf97bb62282e1cd818a28223cf536db8b0fddf4}
 
   # delete the cluster if it exists
   if kind get clusters | grep "${KIND_CLUSTER_NAME}"; then
@@ -95,7 +95,7 @@ fi
 
 if [ "${SKIP_E2E_IMAGE_CREATION}" = "false" ]; then
   if ! command -v ginkgo &> /dev/null; then
-    go install github.com/onsi/ginkgo/v2/ginkgo@v2.22.2
+    go install github.com/onsi/ginkgo/v2/ginkgo@v2.23.4
   fi
 
   echo "[dev-env] .. done building controller images"

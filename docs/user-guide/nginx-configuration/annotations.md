@@ -123,7 +123,7 @@ You can add these Kubernetes annotations to specific Ingress objects to customiz
 |[nginx.ingress.kubernetes.io/connection-proxy-header](#connection-proxy-header)|string|
 |[nginx.ingress.kubernetes.io/enable-access-log](#enable-access-log)|"true" or "false"|
 |[nginx.ingress.kubernetes.io/enable-opentelemetry](#enable-opentelemetry)|"true" or "false"|
-|[nginx.ingress.kubernetes.io/opentelemetry-trust-incoming-span](#opentelemetry-trust-incoming-spans)|"true" or "false"|
+|[nginx.ingress.kubernetes.io/opentelemetry-trust-incoming-span](#opentelemetry-trust-incoming-span)|"true" or "false"|
 |[nginx.ingress.kubernetes.io/use-regex](#use-regex)|bool|
 |[nginx.ingress.kubernetes.io/enable-modsecurity](#modsecurity)|bool|
 |[nginx.ingress.kubernetes.io/enable-owasp-core-rules](#modsecurity)|bool|
@@ -446,15 +446,15 @@ kind: Ingress
 metadata:
   annotations:
     nginx.ingress.kubernetes.io/server-snippet: |
-        set $agentflag 0;
+      set $agentflag 0;
 
-        if ($http_user_agent ~* "(Mobile)" ){
-          set $agentflag 1;
-        }
+      if ($http_user_agent ~* "(Mobile)" ){
+        set $agentflag 1;
+      }
 
-        if ( $agentflag = 1 ) {
-          return 301 https://m.example.com;
-        }
+      if ( $agentflag = 1 ) {
+        return 301 https://m.example.com;
+      }
 ```
 
 !!! attention
@@ -530,7 +530,7 @@ Additionally it is possible to set:
 ```yaml
 nginx.ingress.kubernetes.io/auth-url: http://foo.com/external-auth
 nginx.ingress.kubernetes.io/auth-snippet: |
-    proxy_set_header Foo-Header 42;
+  proxy_set_header Foo-Header 42;
 ```
 > Note: `nginx.ingress.kubernetes.io/auth-snippet` is an optional annotation. However, it may only be used in conjunction with `nginx.ingress.kubernetes.io/auth-url` and will be ignored if `nginx.ingress.kubernetes.io/auth-url` is not set
 
@@ -539,8 +539,9 @@ nginx.ingress.kubernetes.io/auth-snippet: |
 
 #### Global External Authentication
 
-By default the controller redirects all requests to an existing service that provides authentication if `global-auth-url` is set in the NGINX ConfigMap. If you want to disable this behavior for that ingress, you can use `enable-global-auth: "false"` in the NGINX ConfigMap.
-`nginx.ingress.kubernetes.io/enable-global-auth`:
+By default the controller redirects all requests to an existing service that provides authentication if `global-auth-url` is set in the Ingress NGINX ConfigMap. If you want to disable this behavior for that Ingress, you can use the `nginx.ingress.kubernetes.io/enable-global-auth: "false"` annotation.
+
+- `nginx.ingress.kubernetes.io/enable-global-auth`:
    indicates if GlobalExternalAuth configuration should be applied or not to this Ingress rule. Default values is set to `"true"`.
 
 !!! note
@@ -837,8 +838,11 @@ nginx.ingress.kubernetes.io/enable-opentelemetry: "true"
 The option to trust incoming trace spans can be enabled or disabled globally through the ConfigMap but this will
 sometimes need to be overridden to enable it or disable it for a specific ingress (e.g. only enable on a private endpoint)
 
+!!! note
+    This annotation requires `nginx.ingress.kubernetes.io/enable-opentelemetry` to be set to `"true"`, otherwise it will be ignored.
+
 ```yaml
-nginx.ingress.kubernetes.io/opentelemetry-trust-incoming-spans: "true"
+nginx.ingress.kubernetes.io/opentelemetry-trust-incoming-span: "true"
 ```
 
 ### X-Forwarded-Prefix Header
@@ -875,8 +879,8 @@ nginx.ingress.kubernetes.io/modsecurity-transaction-id: "$request_id"
 You can also add your own set of modsecurity rules via a snippet:
 ```yaml
 nginx.ingress.kubernetes.io/modsecurity-snippet: |
-SecRuleEngine On
-SecDebugLog /tmp/modsec_debug.log
+  SecRuleEngine On
+  SecDebugLog /tmp/modsec_debug.log
 ```
 
 Note: If you use both `enable-owasp-core-rules` and `modsecurity-snippet` annotations together, only the
@@ -887,13 +891,13 @@ statement:
 nginx 0.24.1 and below
 ```yaml
 nginx.ingress.kubernetes.io/modsecurity-snippet: |
-Include /etc/nginx/owasp-modsecurity-crs/nginx-modsecurity.conf
-Include /etc/nginx/modsecurity/modsecurity.conf
+  Include /etc/nginx/owasp-modsecurity-crs/nginx-modsecurity.conf
+  Include /etc/nginx/modsecurity/modsecurity.conf
 ```
 nginx 0.25.0 and above
 ```yaml
 nginx.ingress.kubernetes.io/modsecurity-snippet: |
-Include /etc/nginx/owasp-modsecurity-crs/nginx-modsecurity.conf
+  Include /etc/nginx/owasp-modsecurity-crs/nginx-modsecurity.conf
 ```
 
 ### Backend Protocol
